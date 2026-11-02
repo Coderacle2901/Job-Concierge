@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Premium Executive Tech CSS */
+        :root {
+            --primary-color: #1a365d; /* Authoritative Deep Navy */
+            --text-main: #2d3748; /* Soft Charcoal for readability */
+            --text-muted: #718096; /* Slate gray for dates/locations */
+            --border-color: #cbd5e1; /* Subtle line breaks */
+        }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            line-height: 1.6; 
+            color: var(--text-main); 
+            padding: 40px 50px; 
+            font-size: 11pt; 
+        }
+        
+        /* Header Styling */
+        .header { 
+            text-align: center; 
+            margin-bottom: 24px; 
+        }
+        h1 { 
+            font-size: 26pt; 
+            margin: 0 0 4px 0; 
+            color: var(--primary-color); 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            font-weight: 800; 
+        }
+        .contact-info { 
+            font-size: 10pt; 
+            color: var(--text-muted); 
+            font-weight: 500;
+        }
+        
+        /* Section Styling */
+        .section { margin-bottom: 22px; }
+        .section-title { 
+            font-size: 12pt; 
+            font-weight: 700; 
+            color: var(--primary-color); 
+            text-transform: uppercase; 
+            border-bottom: 2px solid var(--primary-color); 
+            padding-bottom: 4px; 
+            margin-top: 20px; 
+            margin-bottom: 14px; 
+            letter-spacing: 0.5px; 
+        }
+        
+        /* Grid for Skills to keep them perfectly aligned */
+        .skills-grid { 
+            display: grid; 
+            grid-template-columns: 140px 1fr; 
+            gap: 8px 12px; 
+            margin-bottom: 5px; 
+            font-size: 10.5pt;
+        }
+        .skill-category { font-weight: 700; color: var(--primary-color); }
+        
+        /* Job History Layout */
+        .job-container { margin-bottom: 18px; }
+        .job-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 2px; 
+        }
+        .job-company { font-weight: 700; font-size: 12pt; color: var(--text-main); }
+        .job-dates { color: var(--text-muted); font-weight: 600; font-size: 10pt; }
+        
+        .job-title-row { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 6px; 
+        }
+        .job-title { font-style: italic; color: var(--primary-color); font-weight: 600; font-size: 11pt; }
+        
+        /* Bullet Points */
+        ul { margin-top: 0; padding-left: 18px; margin-bottom: 0; }
+        li { margin-bottom: 6px; text-align: justify; font-size: 10.5pt; color: var(--text-main); }
+        
+        /* Summary Text */
+        p { margin-top: 0; text-align: justify; font-size: 10.5pt; }
+
+        /*   NEW: PRINT SAFE CSS TO PREVENT CUTTING */
+        @media print {
+            .avoid-break {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .section-title, .job-header {
+                page-break-after: avoid !important;
+                break-after: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <% 
+        const rName = locals.personalInfo?.name || locals.name || "Professional Candidate";
+        const rEmail = locals.personalInfo?.email || locals.contact?.email || "";
+        const rPhone = locals.personalInfo?.phone || locals.contact?.phone || "";
+        const rLocation = locals.personalInfo?.location || locals.contact?.location || "";
+        
+        const rSummary = locals.summary || "";
+        const rSkills = locals.skills || locals.keywords || [];
+        const rExp = locals.experience || [];
+        const rEdu = locals.education || [];
+        
+        const rProjects = locals.projects || [];
+        const rCerts = locals.certifications || [];
+
+        const contactArray = [rLocation, rEmail, rPhone].filter(Boolean);
+        const contactString = contactArray.join(' &nbsp;|&nbsp; ');
+    %>
+
+    <div class="header">
+        <h1><%= rName %></h1>
+        <div class="contact-info">
+            <%- contactString %>
+        </div>
+    </div>
+
+    <% if (rSummary) { %>
+    <div class="section avoid-break">
+        <div class="section-title">Professional Summary</div>
+        <p><%= rSummary %></p>
+    </div>
+    <% } %>
+
+    <% if (rSkills && rSkills.length > 0) { %>
+    <div class="section avoid-break">
+        <div class="section-title">Core Competencies</div>
+        <div class="skills-grid" style="display: block;">
+            <div><%= Array.isArray(rSkills) ? rSkills.join(', ') : rSkills %></div>
+        </div>
+    </div>
+    <% } %> 
+ 
+    <% if (rExp && rExp.length > 0) { %>
+    <div class="section">
+        <div class="section-title">Professional Experience</div>
+        <% rExp.forEach(function(job) { 
+            const company = job.company || "";
+            const location = job.location || "";
+            const dates = job.dates || job.years || ""; 
+            const title = job.title || "";
+            const bullets = job.bullets || job.description || [];
+        %>
+            <!--   Added 'avoid-break' here so a single job doesn't get cut in half -->
+            <div class="job-container avoid-break">
+                <div class="job-header">
+                    <span class="job-company"><%= company %><% if(location) { %>, <%= location %><% } %></span>
+                    <span class="job-dates"><%= dates %></span>
+                </div>
+                <div class="job-title-row">
+                    <span class="job-title"><%= title %></span>
+                </div>
+                <% if(bullets.length > 0) { %>
+                <ul>
+                    <% bullets.forEach(function(bullet) { %>
+                        <li><%= bullet %></li>
+                    <% }); %>
+                </ul>
+                <% } %>
+            </div>
+        <% }); %>
+    </div>
+    <% } %>
+
+    <% if (rProjects && rProjects.length > 0) { %>
+    <div class="section">
+        <div class="section-title">Technical Projects</div>
+        <% rProjects.forEach(function(project) { %>
+            <!--   Added 'avoid-break' here -->
+            <div class="job-container avoid-break" style="margin-bottom: 12px;">
+                <div class="job-header">
+                    <span class="job-company"><%= project.name %></span>
+                </div>
+                <% if(project.technologies && project.technologies.length > 0) { %>
+                <div class="job-title-row" style="margin-bottom: 4px;">
+                    <span class="job-title" style="font-size: 10pt; color: var(--text-muted);">
+                        Technologies: <%= Array.isArray(project.technologies) ? project.technologies.join(', ') : project.technologies %>
+                    </span>
+                </div>
+                <% } %>
+                <% if(project.description) { %>
+                <p style="margin-bottom: 0;"><%= project.description %></p>
+                <% } %>
+            </div>
+        <% }); %>
+    </div>
+    <% } %>
+
+    <% if (rEdu && rEdu.length > 0) { %>
+    <div class="section">
+        <div class="section-title">Education</div>
+        <% rEdu.forEach(function(edu) { 
+            const institution = edu.institution || edu.university || "";
+            const dates = edu.dates || edu.years || "";
+            const degree = edu.degree || "";
+            const location = edu.location || "";
+        %>
+            <!--   Added 'avoid-break' here to keep Degree and Dates together -->
+            <div class="job-container avoid-break" style="margin-bottom: 12px;">
+                <div class="job-header" style="margin-bottom: 0;">
+                    <span class="job-company"><%= institution %><% if(location) { %>, <%= location %><% } %></span>
+                    <span class="job-dates"><%= dates %></span>
+                </div>
+                <div class="job-title-row">
+                    <span class="job-title"><%= degree %></span>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+    <% } %>
+
+    <% if (rCerts && rCerts.length > 0) { %>
+    <!--   Added 'avoid-break' to keep certifications block together -->
+    <div class="section avoid-break">
+        <div class="section-title">Certifications</div>
+        <ul style="margin-bottom: 12px;">
+            <% rCerts.forEach(function(cert) { %>
+                <li>
+                    <!--   SMART LOGIC: Handles both string arrays and AI JSON Objects -->
+                    <% if (typeof cert === 'string') { %>
+                        <%= cert %>
+                    <% } else if (typeof cert === 'object' && cert !== null) { %>
+                        <strong><%= cert.name || cert.title || 'Certification' %></strong>
+                        <% if (cert.issuer) { %> | <span style="color: var(--text-muted);"><%= cert.issuer %></span><% } %>
+                        <% if (cert.year || cert.date) { %> (<%= cert.year || cert.date %>)<% } %>
+                    <% } %>
+                </li>
+            <% }); %>
+        </ul>
+    </div>
+    <% } %>
+
+</body>
+</html>
